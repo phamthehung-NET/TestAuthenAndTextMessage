@@ -13,5 +13,9 @@
         public string AuthorId { get; set; }
 
         public string AuthorName { get; set; }
+
+        public bool IsSelfDelete { get; set; } = false;
+
+        public bool IsDeleteForEveryOne { get; set; } = false;
     }
 }
