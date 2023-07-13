@@ -81,30 +81,30 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
             List<object> conversationsAndGroups = new();
 
             var conversation = (from c in context.Conversations
-                               join u1 in context.Users on c.User1Id equals u1.Id
-                               join u2 in context.Users on c.User2Id equals u2.Id
-                               join m in context.Messages on c.Id equals m.ConversationId into msgs
-                               from m in msgs.DefaultIfEmpty()
-                               join mu in context.Users on m.AuthorId equals mu.Id
-                               where (u1.Id.Equals(userId) || u2.Id.Equals(userId)) && !m.BelongToGroup
-                               select new
-                               {
-                                   c.Id,
-                                   User1Id = u1.Id,
-                                   User1FullName = u1.FullName,
-                                   User2Id = u2.Id,
-                                   User2FullName = u2.FullName,
-                                   c.IsUser1Deleted,
-                                   c.IsUser2Deleted,
-                                   c.CreatedDate,
-                                   c.ModifiedDate,
-                                   LastestMessageId = m.Id,
-                                   LastestMessageContent = m.Content,
-                                   LastestMessageCreatedDate = m.CreatedDate,
-                                   LastestMessageModifiedDate = m.ModifiedDate,
-                                   LastestMessageAuthorName = mu.FullName,
-                                   LastestMessageAuthorId = mu.Id,
-                               }).GroupBy(x => new { x.Id, x.User1FullName, x.User1Id, x.User2Id, x.User2FullName, x.IsUser1Deleted, x.IsUser2Deleted, x.CreatedDate, x.ModifiedDate })
+                                join u1 in context.Users on c.User1Id equals u1.Id
+                                join u2 in context.Users on c.User2Id equals u2.Id
+                                join m in context.Messages on c.Id equals m.ConversationId into msgs
+                                from m in msgs.DefaultIfEmpty()
+                                join mu in context.Users on m.AuthorId equals mu.Id
+                                where (u1.Id.Equals(userId) || u2.Id.Equals(userId)) && !m.BelongToGroup
+                                select new
+                                {
+                                    c.Id,
+                                    User1Id = u1.Id,
+                                    User1FullName = u1.FullName,
+                                    User2Id = u2.Id,
+                                    User2FullName = u2.FullName,
+                                    c.IsUser1Deleted,
+                                    c.IsUser2Deleted,
+                                    c.CreatedDate,
+                                    c.ModifiedDate,
+                                    LastestMessageId = m.Id,
+                                    LastestMessageContent = m.Content,
+                                    LastestMessageCreatedDate = m.CreatedDate,
+                                    LastestMessageModifiedDate = m.ModifiedDate,
+                                    LastestMessageAuthorName = mu.FullName,
+                                    LastestMessageAuthorId = mu.Id,
+                                }).GroupBy(x => new { x.Id, x.User1FullName, x.User1Id, x.User2Id, x.User2FullName, x.IsUser1Deleted, x.IsUser2Deleted, x.CreatedDate, x.ModifiedDate })
                                .Select(x => new ConversationDTO
                                {
                                    Id = x.Key.Id,
@@ -148,7 +148,7 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
                 ModifiedDate = DateTime.Now,
             };
             context.Groups.Add(group);
-            return ErrorException.None;
+            return group.Id > 0 ? ErrorException.None : ErrorException.DatabaseError;
         }
 
         public ErrorException DeleteGroupChat(int id)
@@ -175,27 +175,27 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
         private IQueryable<GroupDTO> GetAllGroups(string currentUserId)
         {
             return (from g in context.Groups
-                         join ug in context.UserGroupsChats on g.Id equals ug.GroupId
-                         join u in context.Users on g.AdminId equals u.Id
-                         join m in context.Messages on g.Id equals m.ConversationId into mgs
-                         from m in mgs.DefaultIfEmpty()
-                         join mu in context.Users on m.AuthorId equals mu.Id
-                         where ug.UserId.Equals(currentUserId) && m.BelongToGroup
-                         select new
-                         {
-                             g.Id,
-                             g.Name,
-                             g.AdminId,
-                             g.Avatar,
-                             g.CreatedDate,
-                             g.ModifiedDate,
-                             LastestMessageId = m.Id,
-                             LastestMessageContent = m.Content,
-                             LastestMessageCreatedDate = m.CreatedDate,
-                             LastestMessageModifiedDate = m.ModifiedDate,
-                             LastestMessageAuthorName = mu.FullName,
-                             LastestMessageAuthorId = mu.Id,
-                         }).GroupBy(x => new { x.Id, x.Name, x.AdminId, x.Avatar, x.CreatedDate, x.ModifiedDate })
+                    join ug in context.UserGroupsChats on g.Id equals ug.GroupId
+                    join u in context.Users on g.AdminId equals u.Id
+                    join m in context.Messages on g.Id equals m.ConversationId into mgs
+                    from m in mgs.DefaultIfEmpty()
+                    join mu in context.Users on m.AuthorId equals mu.Id
+                    where ug.UserId.Equals(currentUserId) && m.BelongToGroup
+                    select new
+                    {
+                        g.Id,
+                        g.Name,
+                        g.AdminId,
+                        g.Avatar,
+                        g.CreatedDate,
+                        g.ModifiedDate,
+                        LastestMessageId = m.Id,
+                        LastestMessageContent = m.Content,
+                        LastestMessageCreatedDate = m.CreatedDate,
+                        LastestMessageModifiedDate = m.ModifiedDate,
+                        LastestMessageAuthorName = mu.FullName,
+                        LastestMessageAuthorId = mu.Id,
+                    }).GroupBy(x => new { x.Id, x.Name, x.AdminId, x.Avatar, x.CreatedDate, x.ModifiedDate })
                          .Select(x => new GroupDTO
                          {
                              Id = x.Key.Id,
@@ -229,7 +229,7 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
                     groupChat.Avatar = HelperFunctions.UploadBase64File(group.Avatar, group.AvatarFileName, Constants.GroupAvatarDirectory);
                     groupChat.ModifiedDate = DateTime.Now;
                     groupChat.Name = group.Name;
-                    
+
                     context.SaveChanges();
                     return ErrorException.None;
                 }

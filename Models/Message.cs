@@ -11,5 +11,9 @@
         public bool BelongToGroup { get; set; }
 
         public string AuthorId { get; set; }
+
+        public bool IsSelfDelete { get; set; } = false;
+
+        public bool IsDeleteForEveryOne { get; set; } = false;
     }
 }

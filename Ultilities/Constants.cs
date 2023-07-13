@@ -13,6 +13,7 @@
         DoublicateUserName,
         NotExist,
         NotPermitted,
+        DatabaseError,
     }
 
     public enum AttachmentType
