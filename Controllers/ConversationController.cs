@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TestAuthenAndTextMessage.Models.DTO;
 using TestAuthenAndTextMessage.Services.Interfaces;
 
 namespace TestAuthenAndTextMessage.Controllers
@@ -59,5 +60,47 @@ namespace TestAuthenAndTextMessage.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPost]
+        public IActionResult CreateGroupChat(GroupDTO res)
+        {
+			try
+			{
+				service.CreateGroupChat(res);
+				return Ok();
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteGroupChat(int id)
+        {
+			try
+			{
+				service.DeleteGroupChat(id);
+				return Ok();
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+
+        [HttpPost]
+        public IActionResult UpdateGroupChat(GroupDTO res)
+        {
+			try
+			{
+				service.UpdateGroupChat(res);
+				return Ok();
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
     }
 }

@@ -22,4 +22,12 @@
         Link,
         Media,
     }
+
+    public enum MessageType
+    {
+		File,
+		Link,
+		Media,
+        Text,
+	}
 }

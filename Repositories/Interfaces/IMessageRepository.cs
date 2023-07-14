@@ -5,11 +5,11 @@ namespace TestAuthenAndTextMessage.Repositories.Interfaces
 {
     public interface IMessageRepository
     {
-        Pagination<MessageDTO> GetMessages(int pageIndex, int pageSize);
+        Pagination<MessageDTO> GetMessages(int conversationId, bool belongToGroup, int pageIndex, int pageSize);
 
         ErrorException AddMessage(MessageDTO res);
 
-        ErrorException DeleteMessage(int id);
+        ErrorException DeleteMessage(MessageDTO res);
 
         ErrorException UpdateMessage(MessageDTO res);
     }

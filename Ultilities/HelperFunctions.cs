@@ -1,4 +1,6 @@
-﻿namespace TestAuthenAndTextMessage.Ultilities
+﻿using System.IO;
+
+namespace TestAuthenAndTextMessage.Ultilities
 {
     public class HelperFunctions
     {
@@ -34,5 +36,16 @@
                 return null;
             }
         }
-    }
+
+        public static bool RemoveFile(string path)
+        {
+			FileInfo filePath = new(@"wwwroot\" + path);
+            if (filePath.Exists)
+            {
+                filePath.Delete();
+                return true;
+            }
+            return false;
+		}
+	}
 }

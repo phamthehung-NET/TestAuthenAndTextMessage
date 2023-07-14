@@ -4,6 +4,7 @@ using TestAuthenAndTextMessage.Data;
 using TestAuthenAndTextMessage.Models;
 using TestAuthenAndTextMessage.Models.DTO;
 using TestAuthenAndTextMessage.Repositories.Interfaces;
+using TestAuthenAndTextMessage.Services.Interfaces;
 using TestAuthenAndTextMessage.Ultilities;
 
 namespace TestAuthenAndTextMessage.Repositories.Implementation
@@ -12,11 +13,13 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
     {
         private readonly ApplicationDbContext context;
         private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IMessageService messageService;
 
-        public ConversationRepository(ApplicationDbContext _context, IHttpContextAccessor _httpContextAccessor)
+        public ConversationRepository(ApplicationDbContext _context, IHttpContextAccessor _httpContextAccessor, IMessageService _messageService)
         {
             context = _context;
             httpContextAccessor = _httpContextAccessor;
+            messageService = _messageService;
         }
 
         public ErrorException CreateConversation(string userId, string message)
@@ -39,7 +42,14 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
                     context.Add(conversation);
                     context.SaveChanges();
 
-                    //add message
+                    messageService.AddMessage(new MessageDTO
+                    {
+                        AuthorId = currentUserId,
+                        ConversationId = conversation.Id,
+                        Content = message,
+                        BelongToGroup = false,
+                        MessageType = (int)MessageType.Text,
+                    });
 
                     return ErrorException.None;
                 }
@@ -47,8 +57,15 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
             }
             else
             {
-                //add message
-                return ErrorException.None;
+				messageService.AddMessage(new MessageDTO
+				{
+					AuthorId = currentUserId,
+					ConversationId = conversationDb.Id,
+					Content = message,
+					BelongToGroup = false,
+					MessageType = (int)MessageType.Text,
+				});
+				return ErrorException.None;
             }
         }
 
@@ -67,7 +84,6 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
                 {
                     conversation.IsUser2Deleted = true;
                 }
-
                 context.SaveChanges();
                 return ErrorException.None;
             }
@@ -148,7 +164,17 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
                 ModifiedDate = DateTime.Now,
             };
             context.Groups.Add(group);
-            return group.Id > 0 ? ErrorException.None : ErrorException.DatabaseError;
+            context.SaveChanges();
+			
+            messageService.AddMessage(new MessageDTO
+			{
+				AuthorId = currentUserId,
+				ConversationId = group.Id,
+				Content = res.Message,
+				BelongToGroup = true,
+				MessageType = (int)MessageType.Text,
+			});
+			return group.Id > 0 ? ErrorException.None : ErrorException.DatabaseError;
         }
 
         public ErrorException DeleteGroupChat(int id)

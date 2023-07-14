@@ -15,5 +15,7 @@
         public bool IsSelfDelete { get; set; } = false;
 
         public bool IsDeleteForEveryOne { get; set; } = false;
+
+        public int MessageType { get; set; }
     }
 }

@@ -15,5 +15,7 @@
         public MessageDTO LastestMessage { get; set; }
 
         public bool IsGroupChat { get; } = true;
+
+        public string Message { get; set; }
     }
 }
