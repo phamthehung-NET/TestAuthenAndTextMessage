@@ -1,4 +1,5 @@
 ﻿using TestAuthenAndTextMessage.Models;
+using TestAuthenAndTextMessage.Models.DTO;
 using TestAuthenAndTextMessage.Ultilities;
 
 namespace TestAuthenAndTextMessage.Services.Interfaces
@@ -9,6 +10,6 @@ namespace TestAuthenAndTextMessage.Services.Interfaces
 
         Task Resgiter(RegisterModel model);
 
-        Task<CustomUser> GetUserInfo();
+        Task<UserDTO> GetUserInfo();
     }
 }

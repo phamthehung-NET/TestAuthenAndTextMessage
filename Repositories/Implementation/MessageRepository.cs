@@ -87,7 +87,8 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
                           {
                               Id = m.Id,
                               AuthorId = m.AuthorId,
-                              AuthorName = u.FullName,
+                              AuthorFirstName = u.FirstName,
+                              AuthorLastName = u.LastName,
                               Content = m.Content,
                               BelongToGroup = m.BelongToGroup,
                               ConversationId = m.ConversationId,

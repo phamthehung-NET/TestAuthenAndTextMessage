@@ -20,7 +20,8 @@ namespace TestAuthenAndTextMessage.Extensions
 
             claims.AddClaim(new Claim("Email", userInfo.Email));
             claims.AddClaim(new Claim("PhoneNumber", userInfo.PhoneNumber));
-            claims.AddClaim(new Claim("FullName", userInfo.FullName));
+            claims.AddClaim(new Claim("FirstName", userInfo.FirstName));
+            claims.AddClaim(new Claim("LastName", userInfo.LastName));
 
             return claims;
         }

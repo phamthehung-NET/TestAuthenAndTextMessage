@@ -18,7 +18,7 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
 
         public async Task<ErrorException> CreateWsClient(string connectionId, string currentUserId)
 		{
-			var connectionDb = context.Clients.FirstOrDefault(x => x.SignalRClientId.Equals(connectionId));
+			var connectionDb = context.Clients.FirstOrDefault(x => x.UserId.Equals(currentUserId));
 			if(connectionDb == null)
 			{
 				Client client = new()
@@ -66,7 +66,8 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
 									 Id = c.Id,
 									 UserId = u.Id,
 									 SignalRClientId = c.SignalRClientId,
-									 UserFullName = u.FullName,
+									 UserFirstName = u.FirstName,
+									 UserLastName = u.LastName,
 								 }).ToListAsync();
 			}
 			else
@@ -79,7 +80,8 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
 								  Id = c1.Id,
 								  UserId = u.Id,
 								  SignalRClientId = c1.SignalRClientId,
-								  UserFullName = u.FullName,
+								  UserFirstName = u.FirstName,
+								  UserLastName = u.LastName,
 							  }).FirstOrDefaultAsync();
 				var client2 = await (from c in context.Conversations
 									 join c2 in context.Clients on c.User2Id equals c2.UserId
@@ -89,7 +91,8 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
 										 Id = c2.Id,
 										 UserId = u.Id,
 										 SignalRClientId = c2.SignalRClientId,
-										 UserFullName = u.FullName,
+										 UserFirstName = u.FirstName,
+										 UserLastName = u.LastName,
 									 }).FirstOrDefaultAsync();
 				if (client1 != null)
 				{

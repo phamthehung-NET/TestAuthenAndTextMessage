@@ -1,4 +1,5 @@
 ﻿using TestAuthenAndTextMessage.Models;
+using TestAuthenAndTextMessage.Models.DTO;
 using TestAuthenAndTextMessage.Repositories.Interfaces;
 using TestAuthenAndTextMessage.Services.Interfaces;
 using TestAuthenAndTextMessage.Ultilities;
@@ -33,7 +34,7 @@ namespace TestAuthenAndTextMessage.Services.Implementation
             }
         }
 
-        public async Task<CustomUser> GetUserInfo()
+        public async Task<UserDTO> GetUserInfo()
         { 
             return await repository.GetUserInfo();
         }

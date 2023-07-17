@@ -40,7 +40,7 @@ namespace TestAuthenAndTextMessage.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Resgiter(RegisterModel model)
+        public async Task<IActionResult> Register(RegisterModel model)
         {
             try
             {

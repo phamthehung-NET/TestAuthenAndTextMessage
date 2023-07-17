@@ -107,10 +107,14 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
                                 {
                                     c.Id,
                                     User1Id = u1.Id,
-                                    User1FullName = u1.FullName,
+                                    User1FirstName = u1.FirstName,
+                                    User1LastName = u1.LastName,
                                     User2Id = u2.Id,
-                                    User2FullName = u2.FullName,
-                                    c.IsUser1Deleted,
+									User2FirstName = u2.FirstName,
+									User2LastName = u2.LastName,
+									User1Avatar = u1.Avatar,
+									User2Avatar = u2.Avatar,
+									c.IsUser1Deleted,
                                     c.IsUser2Deleted,
                                     c.CreatedDate,
                                     c.ModifiedDate,
@@ -118,16 +122,21 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
                                     LastestMessageContent = m.Content,
                                     LastestMessageCreatedDate = m.CreatedDate,
                                     LastestMessageModifiedDate = m.ModifiedDate,
-                                    LastestMessageAuthorName = mu.FullName,
+                                    LastestMessageAuthorFirstName = mu.FirstName,
+                                    LastestMessageAuthorLastName = mu.LastName,
                                     LastestMessageAuthorId = mu.Id,
-                                }).GroupBy(x => new { x.Id, x.User1FullName, x.User1Id, x.User2Id, x.User2FullName, x.IsUser1Deleted, x.IsUser2Deleted, x.CreatedDate, x.ModifiedDate })
+                                }).GroupBy(x => new { x.Id, x.User1FirstName, x.User1LastName, x.User1Avatar, x.User1Id, x.User2Id, x.User2FirstName, x.User2LastName, x.User2Avatar, x.IsUser1Deleted, x.IsUser2Deleted, x.CreatedDate, x.ModifiedDate })
                                .Select(x => new ConversationDTO
                                {
                                    Id = x.Key.Id,
                                    User1Id = x.Key.User1Id,
                                    User2Id = x.Key.User2Id,
-                                   User1FullName = x.Key.User1FullName,
-                                   User2FullName = x.Key.User2FullName,
+                                   User1FirstName = x.Key.User1FirstName,
+                                   User1LastName = x.Key.User1LastName,
+                                   User1Avatar = x.Key.User1Avatar,
+                                   User2FirstName = x.Key.User2FirstName,
+                                   User2LastName = x.Key.User2LastName,
+                                   User2Avatar = x.Key.User2Avatar,
                                    IsUser1Deleted = x.Key.IsUser1Deleted,
                                    IsUser2Deleted = x.Key.IsUser2Deleted,
                                    CreatedDate = x.Key.CreatedDate,
@@ -141,7 +150,8 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
                                        CreatedDate = y.CreatedDate,
                                        ModifiedDate = y.ModifiedDate,
                                        AuthorId = y.LastestMessageAuthorId,
-                                       AuthorName = y.LastestMessageAuthorName,
+                                       AuthorFirstName = y.LastestMessageAuthorFirstName,
+                                       AuthorLastName = y.LastestMessageAuthorLastName,
                                    }).Where(y => y.Id > 0).OrderByDescending(x => x.CreatedDate).FirstOrDefault(),
                                });
             var groups = GetAllGroups(userId);
@@ -219,8 +229,9 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
                         LastestMessageContent = m.Content,
                         LastestMessageCreatedDate = m.CreatedDate,
                         LastestMessageModifiedDate = m.ModifiedDate,
-                        LastestMessageAuthorName = mu.FullName,
-                        LastestMessageAuthorId = mu.Id,
+						LastestMessageAuthorFirstName = mu.FirstName,
+						LastestMessageAuthorLastName = mu.LastName,
+						LastestMessageAuthorId = mu.Id,
                     }).GroupBy(x => new { x.Id, x.Name, x.AdminId, x.Avatar, x.CreatedDate, x.ModifiedDate })
                          .Select(x => new GroupDTO
                          {
@@ -239,8 +250,9 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
                                  CreatedDate = y.CreatedDate,
                                  ModifiedDate = y.ModifiedDate,
                                  AuthorId = y.LastestMessageAuthorId,
-                                 AuthorName = y.LastestMessageAuthorName,
-                             }).Where(y => y.Id > 0).OrderByDescending(x => x.CreatedDate).FirstOrDefault(),
+								 AuthorFirstName = y.LastestMessageAuthorFirstName,
+								 AuthorLastName = y.LastestMessageAuthorLastName,
+							 }).Where(y => y.Id > 0).OrderByDescending(x => x.CreatedDate).FirstOrDefault(),
                          });
         }
 

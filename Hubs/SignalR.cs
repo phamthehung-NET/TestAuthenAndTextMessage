@@ -54,11 +54,11 @@ namespace TestAuthenAndTextMessage.Hubs
                 
                 List<ClientDTO> clients = await service.GetClientsInConversation(conversationId, belongtoGroup);
                 
-                var currentClientName = clients.FirstOrDefault(x => x.UserId.Equals(currentUserId)).UserFullName;
+                var currentClientLastName = clients.FirstOrDefault(x => x.UserId.Equals(currentUserId)).UserLastName;
 
                 IReadOnlyList<string> connectionIds = clients.Select(x => x.SignalRClientId).ToList();
 
-                await Clients.Clients(connectionIds).SendAsync("OnUserInput", currentClientName);
+                await Clients.Clients(connectionIds).SendAsync("OnUserInput", currentClientLastName);
             }
             catch (Exception ex)
             {
@@ -75,16 +75,21 @@ namespace TestAuthenAndTextMessage.Hubs
 
 				List<ClientDTO> clients = await service.GetClientsInConversation(conversationId, belongtoGroup);
 
-				var currentClientName = clients.FirstOrDefault(x => x.UserId.Equals(currentUserId)).UserFullName;
+				var currentClientLastName = clients.FirstOrDefault(x => x.UserId.Equals(currentUserId)).UserLastName;
 
 				IReadOnlyList<string> connectionIds = clients.Select(x => x.SignalRClientId).ToList();
 
-				await Clients.Clients(connectionIds).SendAsync("OnUserStopInput", currentClientName);
+				await Clients.Clients(connectionIds).SendAsync("OnUserStopInput", currentClientLastName);
 			}
 			catch (Exception ex)
 			{
 				Console.WriteLine(ex.Message);
 			}
 		}
+
+        public async Task Test(string data)
+        {
+            await Clients.All.SendAsync("Test", data);
+        }
 	}
 }

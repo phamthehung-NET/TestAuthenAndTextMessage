@@ -5,6 +5,8 @@
         public const string GroupAvatarDirectory = "/Images/GroupAvatar";
         public const string UserAvatarDirectory = "/Images/UserAvatar";
         public const string AttachmentLink = "/Attachments";
+        public const string UserRole = "User";
+        public const string AdminRole = "Admin";
     }
 
     public enum ErrorException

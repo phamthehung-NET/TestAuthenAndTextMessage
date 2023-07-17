@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TestAuthenAndTextMessage.Data;
 
@@ -11,9 +12,11 @@ using TestAuthenAndTextMessage.Data;
 namespace TestAuthenAndTextMessage.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230717024820_SeedRole")]
+    partial class SeedRole
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -276,9 +279,6 @@ namespace TestAuthenAndTextMessage.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<string>("Avatar")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -346,16 +346,16 @@ namespace TestAuthenAndTextMessage.Migrations
                         {
                             Id = "1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "65d192e6-15ec-47b8-a82d-43bbe0d95dfe",
+                            ConcurrencyStamp = "72a74df4-c3f3-4bd9-8f8d-2d2bcb7320e6",
                             Email = "admin@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "System",
                             LastName = "Admin",
                             LockoutEnabled = true,
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJ9yxvEpsZrGYLya1WtEeRarOxL9BoKcUoI6B/lTEe1NcFRJlYK+PE0UDf7LgrMitA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAECf1ByyD1CSlrjNWUzluS0Jp+qn4TUv3t0gXF/FP1LSS8hea4Cpc+efHmJL6yesX8w==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "45fe7d53-dbc2-44b1-b388-ff47d4f3601f",
+                            SecurityStamp = "51f6462c-c197-4a43-aec9-e7ffffafe150",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         });

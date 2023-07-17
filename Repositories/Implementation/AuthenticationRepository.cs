@@ -5,6 +5,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using TestAuthenAndTextMessage.Models;
+using TestAuthenAndTextMessage.Models.DTO;
 using TestAuthenAndTextMessage.Repositories.Interfaces;
 using TestAuthenAndTextMessage.Ultilities;
 
@@ -67,21 +68,47 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
                 UserName = model.UserName,
                 Email = model.Email,
                 PhoneNumber = model.PhoneNumber,
-                FullName = model.FullName,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
             };
             var result = await userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
+                await userManager.AddToRoleAsync(user, Constants.UserRole);
                 return ErrorException.None;
             }
             return ErrorException.DoublicateUserName;
         }
 
-        public async Task<CustomUser> GetUserInfo()
+        public async Task<UserDTO> GetUserInfo()
         {
             var userId = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            var currentUser = await userManager.FindByIdAsync(userId);
+            var user = await userManager.FindByIdAsync(userId);
+
+            var roles = await userManager.GetRolesAsync(user);
+
+            UserDTO currentUser = new()
+            {
+                Id = user.Id,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                AccessFailedCount = user.AccessFailedCount,
+                ConcurrencyStamp = user.ConcurrencyStamp,
+                EmailConfirmed = user.EmailConfirmed,
+                LockoutEnabled = user.LockoutEnabled,
+                LockoutEnd = user.LockoutEnd,
+                NormalizedEmail = user.NormalizedEmail,
+                NormalizedUserName = user.NormalizedUserName,
+                PasswordHash = user.PasswordHash,
+                PhoneNumber = user.PhoneNumber,
+                PhoneNumberConfirmed = user.PhoneNumberConfirmed,
+                SecurityStamp = user.SecurityStamp,
+                TwoFactorEnabled = user.TwoFactorEnabled,
+                UserName = user.UserName,
+                Role = roles.FirstOrDefault(),
+            };
 
             return currentUser;
         }
