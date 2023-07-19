@@ -63,7 +63,7 @@ namespace TestAuthenAndTextMessage.Controllers
 			}
 		}
 
-		[HttpDelete]
+		[HttpPost]
 		public IActionResult DeleteMessage(MessageDTO res)
 		{
 			try

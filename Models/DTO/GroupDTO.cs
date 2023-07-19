@@ -17,5 +17,7 @@
         public bool IsGroupChat { get; } = true;
 
         public string Message { get; set; }
+
+        public List<string> MemberIds { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using TestAuthenAndTextMessage.Models.DTO;
+﻿using TestAuthenAndTextMessage.Models;
+using TestAuthenAndTextMessage.Models.DTO;
 using TestAuthenAndTextMessage.Repositories.Interfaces;
 using TestAuthenAndTextMessage.Services.Interfaces;
 using TestAuthenAndTextMessage.Ultilities;
@@ -67,5 +68,10 @@ namespace TestAuthenAndTextMessage.Services.Implementation
                 throw new Exception("You need Admin permission to update this group");
             }
         }
-    }
+
+		public IQueryable<CustomUser> SearchUser(string keyword)
+        {
+            return repository.SearchUser(keyword);
+        }
+	}
 }

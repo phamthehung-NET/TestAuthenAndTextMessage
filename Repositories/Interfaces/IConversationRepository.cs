@@ -17,5 +17,7 @@ namespace TestAuthenAndTextMessage.Repositories.Interfaces
         ErrorException DeleteGroupChat(int id);
 
         ErrorException UpdateGroupChat(GroupDTO group);
-    }
+
+        IQueryable<CustomUser> SearchUser(string keyword);
+	}
 }

@@ -1,4 +1,6 @@
 ﻿using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace TestAuthenAndTextMessage.Ultilities
 {
@@ -46,6 +48,58 @@ namespace TestAuthenAndTextMessage.Ultilities
                 return true;
             }
             return false;
+		}
+
+		/// <summary>
+		/// Encrypt256
+		/// </summary>
+		/// <param name="text"></param>
+		/// <returns></returns>
+		public static string Encrypt(string text)
+		{
+			// AesCryptoServiceProvider
+			Aes aes = Aes.Create();
+			aes.BlockSize = 128;
+			aes.KeySize = 256;
+			aes.IV = Encoding.UTF8.GetBytes(Constants.AESInitalVector);
+			aes.Key = Encoding.UTF8.GetBytes(Constants.SystemSecretKey);
+			aes.Mode = CipherMode.CBC;
+			aes.Padding = PaddingMode.PKCS7;
+
+			// Convert string to byte array
+			byte[] src = Encoding.Unicode.GetBytes(text);
+
+			// encryption
+			using var encrypt = aes.CreateEncryptor();
+			byte[] dest = encrypt.TransformFinalBlock(src, 0, src.Length);
+
+			// Convert byte array to Base64 strings
+			return Convert.ToBase64String(dest);
+		}
+
+		/// <summary>
+		/// Decrypt256
+		/// </summary>
+		/// <param name="text"></param>
+		/// <returns></returns>
+		public static string Decrypt(string text)
+		{
+			// AesCryptoServiceProvider
+			Aes aes = Aes.Create();
+			aes.BlockSize = 128;
+			aes.KeySize = 256;
+			aes.IV = Encoding.UTF8.GetBytes(Constants.AESInitalVector);
+			aes.Key = Encoding.UTF8.GetBytes(Constants.SystemSecretKey);
+			aes.Mode = CipherMode.CBC;
+			aes.Padding = PaddingMode.PKCS7;
+
+			// Convert Base64 strings to byte array
+			byte[] src = Convert.FromBase64String(text);
+
+			// decryption
+			using var decrypt = aes.CreateDecryptor();
+			byte[] dest = decrypt.TransformFinalBlock(src, 0, src.Length);
+			return Encoding.Unicode.GetString(dest);
 		}
 	}
 }

@@ -94,15 +94,16 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
         {
             var userId = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            List<object> conversationsAndGroups = new();
+            List<dynamic> conversationsAndGroups = new();
 
             var conversation = (from c in context.Conversations
                                 join u1 in context.Users on c.User1Id equals u1.Id
                                 join u2 in context.Users on c.User2Id equals u2.Id
                                 join m in context.Messages on c.Id equals m.ConversationId into msgs
                                 from m in msgs.DefaultIfEmpty()
-                                join mu in context.Users on m.AuthorId equals mu.Id
-                                where (u1.Id.Equals(userId) || u2.Id.Equals(userId)) && !m.BelongToGroup
+                                join mu in context.Users on m.AuthorId equals mu.Id into msgusers
+                                from mu in msgusers.DefaultIfEmpty()
+                                where (u1.Id.Equals(userId) || u2.Id.Equals(userId))
                                 select new
                                 {
                                     c.Id,
@@ -125,6 +126,7 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
                                     LastestMessageAuthorFirstName = mu.FirstName,
                                     LastestMessageAuthorLastName = mu.LastName,
                                     LastestMessageAuthorId = mu.Id,
+                                    LastestMessageBelongToGroup = m.BelongToGroup,
                                 }).GroupBy(x => new { x.Id, x.User1FirstName, x.User1LastName, x.User1Avatar, x.User1Id, x.User2Id, x.User2FirstName, x.User2LastName, x.User2Avatar, x.IsUser1Deleted, x.IsUser2Deleted, x.CreatedDate, x.ModifiedDate })
                                .Select(x => new ConversationDTO
                                {
@@ -141,12 +143,12 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
                                    IsUser2Deleted = x.Key.IsUser2Deleted,
                                    CreatedDate = x.Key.CreatedDate,
                                    ModifiedDate = x.Key.ModifiedDate,
-                                   LastestMessage = x.Select(y => new MessageDTO
+                                   LastestMessage = x.Where(y => !y.LastestMessageBelongToGroup).Select(y => new MessageDTO
                                    {
                                        Id = y.LastestMessageId,
                                        Content = y.LastestMessageContent,
                                        ConversationId = x.Key.Id,
-                                       BelongToGroup = false,
+                                       BelongToGroup = y.LastestMessageBelongToGroup,
                                        CreatedDate = y.CreatedDate,
                                        ModifiedDate = y.ModifiedDate,
                                        AuthorId = y.LastestMessageAuthorId,
@@ -157,9 +159,9 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
             var groups = GetAllGroups(userId);
 
             conversationsAndGroups.AddRange(conversation);
-            conversationsAndGroups.Add(groups);
+            conversationsAndGroups.AddRange(groups);
 
-            return conversationsAndGroups.AsQueryable().Paginate(pageIndex, pageSize);
+            return conversationsAndGroups.Where(x => x.LastestMessage != null).AsQueryable().Paginate(pageIndex, pageSize);
         }
 
         public ErrorException CreateGroupChat(GroupDTO res)
@@ -184,6 +186,18 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
 				BelongToGroup = true,
 				MessageType = (int)MessageType.Text,
 			});
+
+            res.MemberIds.ForEach(x =>
+            {
+                UserGroupChat userGroup = new()
+                {
+                    GroupId = group.Id,
+                    UserId = x
+                };
+                context.Add(userGroup);
+            });
+            context.SaveChanges();
+
 			return group.Id > 0 ? ErrorException.None : ErrorException.DatabaseError;
         }
 
@@ -215,8 +229,9 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
                     join u in context.Users on g.AdminId equals u.Id
                     join m in context.Messages on g.Id equals m.ConversationId into mgs
                     from m in mgs.DefaultIfEmpty()
-                    join mu in context.Users on m.AuthorId equals mu.Id
-                    where ug.UserId.Equals(currentUserId) && m.BelongToGroup
+                    join mu in context.Users on m.AuthorId equals mu.Id into msgusers
+					from mu in msgusers.DefaultIfEmpty()
+					where ug.UserId.Equals(currentUserId)
                     select new
                     {
                         g.Id,
@@ -232,7 +247,8 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
 						LastestMessageAuthorFirstName = mu.FirstName,
 						LastestMessageAuthorLastName = mu.LastName,
 						LastestMessageAuthorId = mu.Id,
-                    }).GroupBy(x => new { x.Id, x.Name, x.AdminId, x.Avatar, x.CreatedDate, x.ModifiedDate })
+                        LastestMessageBelongToGroup = m.BelongToGroup,
+					}).GroupBy(x => new { x.Id, x.Name, x.AdminId, x.Avatar, x.CreatedDate, x.ModifiedDate })
                          .Select(x => new GroupDTO
                          {
                              Id = x.Key.Id,
@@ -241,7 +257,7 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
                              Avatar = x.Key.Avatar,
                              CreatedDate = x.Key.CreatedDate,
                              ModifiedDate = x.Key.ModifiedDate,
-                             LastestMessage = x.Select(y => new MessageDTO
+                             LastestMessage = x.Where(y => y.LastestMessageBelongToGroup).Select(y => new MessageDTO
                              {
                                  Id = y.LastestMessageId,
                                  Content = y.LastestMessageContent,
@@ -275,5 +291,15 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
             }
             return ErrorException.NotExist;
         }
+
+        public IQueryable<CustomUser> SearchUser(string keyword)
+        {
+            return !string.IsNullOrEmpty(keyword) ? context.Users
+                .Where(x => x.FirstName.ToLower().Contains(keyword.ToLower())
+                || x.LastName.ToLower().Contains(keyword.ToLower())
+                || x.UserName.ToLower().Contains(keyword.ToLower())
+                || x.PhoneNumber.ToLower().Contains(keyword.ToLower())
+                || x.Email.ToLower().Contains(keyword.ToLower())) : null;
+		}
     }
 }

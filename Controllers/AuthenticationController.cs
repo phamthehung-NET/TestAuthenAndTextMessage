@@ -8,6 +8,7 @@ using System.Security.Claims;
 using System.Text;
 using TestAuthenAndTextMessage.Models;
 using TestAuthenAndTextMessage.Services.Interfaces;
+using TestAuthenAndTextMessage.Ultilities;
 
 namespace TestAuthenAndTextMessage.Controllers
 {
@@ -63,5 +64,18 @@ namespace TestAuthenAndTextMessage.Controllers
         {
             return Ok(await service.GetUserInfo());
         }
-    }
+
+        [HttpPost]
+        public IActionResult EncryptAES([FromForm]string data)
+        {
+            return Ok(HelperFunctions.Encrypt(data));
+        }
+
+		[Authorize]
+		[HttpGet]
+		public IActionResult GetSecretkey()
+		{
+			return Ok(Constants.SystemSecretKey);
+		}
+	}
 }

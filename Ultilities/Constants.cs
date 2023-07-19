@@ -7,7 +7,11 @@
         public const string AttachmentLink = "/Attachments";
         public const string UserRole = "User";
         public const string AdminRole = "Admin";
-    }
+
+        public const string AESInitalVector = "OFRna73m*aze01xY";
+		public const string SystemSecretKey = "System_Secretkey";
+
+	}
 
     public enum ErrorException
     {

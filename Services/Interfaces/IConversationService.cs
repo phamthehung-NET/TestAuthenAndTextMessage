@@ -1,4 +1,5 @@
-﻿using TestAuthenAndTextMessage.Models.DTO;
+﻿using TestAuthenAndTextMessage.Models;
+using TestAuthenAndTextMessage.Models.DTO;
 using TestAuthenAndTextMessage.Ultilities;
 
 namespace TestAuthenAndTextMessage.Services.Interfaces
@@ -16,5 +17,7 @@ namespace TestAuthenAndTextMessage.Services.Interfaces
         void DeleteGroupChat(int id);
 
         void UpdateGroupChat(GroupDTO group);
-    }
+
+		IQueryable<CustomUser> SearchUser(string keyword);
+	}
 }

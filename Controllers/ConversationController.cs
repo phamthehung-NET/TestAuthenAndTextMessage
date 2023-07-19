@@ -102,5 +102,18 @@ namespace TestAuthenAndTextMessage.Controllers
 				return BadRequest(ex.Message);
 			}
 		}
-    }
+
+		[HttpGet]
+		public IActionResult SearchUser(string keyword)
+		{
+			try
+			{
+				return Ok(service.SearchUser(keyword).ToList());
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+	}
 }
