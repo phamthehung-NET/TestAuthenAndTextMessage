@@ -10,11 +10,7 @@
 
         public bool BelongToGroup { get; set; }
 
-        public string AuthorId { get; set; }
-
-        public string AuthorFirstName { get; set; }
-
-        public string AuthorLastName { get; set; }
+        public CustomUser Author { get; set; }
 
         public bool IsSelfDelete { get; set; } = false;
 

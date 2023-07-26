@@ -44,7 +44,10 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
 
                     messageService.AddMessage(new MessageDTO
                     {
-                        AuthorId = currentUserId,
+                        Author = new()
+                        {
+                            Id = currentUserId,
+                        },
                         ConversationId = conversation.Id,
                         Content = message,
                         BelongToGroup = false,
@@ -59,7 +62,6 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
             {
 				messageService.AddMessage(new MessageDTO
 				{
-					AuthorId = currentUserId,
 					ConversationId = conversationDb.Id,
 					Content = message,
 					BelongToGroup = false,
@@ -157,9 +159,12 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
                                        BelongToGroup = y.LastestMessageBelongToGroup,
                                        CreatedDate = y.LastestMessageCreatedDate,
                                        ModifiedDate = y.LastestMessageModifiedDate,
-                                       AuthorId = y.LastestMessageAuthorId,
-                                       AuthorFirstName = y.LastestMessageAuthorFirstName,
-                                       AuthorLastName = y.LastestMessageAuthorLastName,
+                                       Author = new()
+                                       {
+                                           Id = y.LastestMessageAuthorId,
+                                           FirstName = y.LastestMessageAuthorFirstName,
+                                           LastName = y.LastestMessageAuthorLastName,
+                                       }
                                    }).Where(y => y.Id > 0).OrderByDescending(x => x.CreatedDate).FirstOrDefault(),
                                });
             var groups = GetAllGroups(userId);
@@ -186,7 +191,6 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
 			
             messageService.AddMessage(new MessageDTO
 			{
-				AuthorId = currentUserId,
 				ConversationId = group.Id,
 				Content = res.Message,
 				BelongToGroup = true,
@@ -271,9 +275,12 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
                                  BelongToGroup = false,
                                  CreatedDate = y.LastestMessageCreatedDate,
                                  ModifiedDate = y.LastestMessageModifiedDate,
-                                 AuthorId = y.LastestMessageAuthorId,
-								 AuthorFirstName = y.LastestMessageAuthorFirstName,
-								 AuthorLastName = y.LastestMessageAuthorLastName,
+								 Author = new()
+								 {
+									 Id = y.LastestMessageAuthorId,
+									 FirstName = y.LastestMessageAuthorFirstName,
+									 LastName = y.LastestMessageAuthorLastName,
+								 }
 							 }).Where(y => y.Id > 0).OrderByDescending(x => x.CreatedDate).FirstOrDefault(),
                          });
         }

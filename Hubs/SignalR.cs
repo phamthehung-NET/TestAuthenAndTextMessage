@@ -56,9 +56,9 @@ namespace TestAuthenAndTextMessage.Hubs
                 
                 var currentClientLastName = clients.FirstOrDefault(x => x.UserId.Equals(currentUserId)).UserLastName;
 
-                IReadOnlyList<string> connectionIds = clients.Select(x => x.SignalRClientId).ToList();
+                IReadOnlyList<string> connectionIds = clients.Where(x => !x.UserId.Equals(currentUserId)).Select(x => x.SignalRClientId).ToList();
 
-                await Clients.Clients(connectionIds).SendAsync("OnUserInput", currentClientLastName);
+                await Clients.Clients(connectionIds).SendAsync("OnUserInput", currentClientLastName, conversationId, belongtoGroup);
             }
             catch (Exception ex)
             {
@@ -77,9 +77,9 @@ namespace TestAuthenAndTextMessage.Hubs
 
 				var currentClientLastName = clients.FirstOrDefault(x => x.UserId.Equals(currentUserId)).UserLastName;
 
-				IReadOnlyList<string> connectionIds = clients.Select(x => x.SignalRClientId).ToList();
+				IReadOnlyList<string> connectionIds = clients.Where(x => !x.UserId.Equals(currentUserId)).Select(x => x.SignalRClientId).ToList();
 
-				await Clients.Clients(connectionIds).SendAsync("OnUserStopInput", currentClientLastName);
+				await Clients.Clients(connectionIds).SendAsync("OnUserStopInput", currentClientLastName, conversationId, belongtoGroup);
 			}
 			catch (Exception ex)
 			{

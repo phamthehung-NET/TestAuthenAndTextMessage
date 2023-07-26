@@ -82,13 +82,10 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
         {
             return (from m in context.Messages
                           join u in context.Users on m.AuthorId equals u.Id
-                          where m.Id == conversationId && m.BelongToGroup == belongToGroup
+                          where m.ConversationId == conversationId && m.BelongToGroup == belongToGroup
                           select new MessageDTO
                           {
                               Id = m.Id,
-                              AuthorId = m.AuthorId,
-                              AuthorFirstName = u.FirstName,
-                              AuthorLastName = u.LastName,
                               Content = m.Content,
                               BelongToGroup = m.BelongToGroup,
                               ConversationId = m.ConversationId,
@@ -97,7 +94,14 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
                               IsDeleteForEveryOne = m.IsDeleteForEveryOne,
                               IsSelfDelete = m.IsSelfDelete,
                               MessageType = m.MessageType,
-                          }).Paginate(pageIndex, pageSize);
+                              Author = new()
+                              {
+                                  Id = m.AuthorId,
+                                  FirstName = u.FirstName,
+                                  LastName = u.LastName,
+                                  Avatar = u.Avatar,
+                              },
+                          }).OrderByDescending(x => x.CreatedDate).Paginate(pageIndex, pageSize);
         }
 
         public ErrorException UpdateMessage(MessageDTO res)
