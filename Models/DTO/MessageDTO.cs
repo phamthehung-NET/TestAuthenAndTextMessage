@@ -19,5 +19,7 @@
         public int MessageType { get; set; }
 
         public string FileName { get; set; }
+
+        IEnumerable<string> ReadUserId { get; set; }
     }
 }

@@ -49,5 +49,7 @@ namespace TestAuthenAndTextMessage.Data
         public DbSet<Message> Messages { get; set; }
 
         public DbSet<UserGroupChat> UserGroupsChats { get; set; }
+
+		public DbSet<UserReadMessage> UserReadMessages { get; set; }
     }
 }

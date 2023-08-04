@@ -1,6 +1,8 @@
 ﻿using Accounting.Utilities;
+using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
 using TestAuthenAndTextMessage.Data;
+using TestAuthenAndTextMessage.Hubs;
 using TestAuthenAndTextMessage.Models;
 using TestAuthenAndTextMessage.Models.DTO;
 using TestAuthenAndTextMessage.Repositories.Interfaces;
@@ -14,15 +16,19 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
         private readonly ApplicationDbContext context;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IAttachmentService attachmentService;
+        private readonly IClientService clientService;
+        private readonly IHubContext<SignalR> hubContext;
 
-        public MessageRepository(ApplicationDbContext _context, IHttpContextAccessor _httpContextAccessor, IAttachmentService _attachmentService)
+        public MessageRepository(ApplicationDbContext _context, IHttpContextAccessor _httpContextAccessor, IAttachmentService _attachmentService, IHubContext<SignalR> _hubContext, IClientService _clientService)
         {
             context = _context;
             httpContextAccessor = _httpContextAccessor;
             attachmentService = _attachmentService;
+            hubContext = _hubContext;
+            clientService = _clientService;
         }
 
-        public ErrorException AddMessage(MessageDTO res)
+        public async Task<ErrorException> AddMessage(MessageDTO res)
         {
             var currentUser = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             Message message = new()
@@ -50,10 +56,15 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
                 });
             }
 
+            if(message.Id > 0)
+            {
+				await SendMessageToClient(message);
+			}
+
             return message.Id > 0 ? ErrorException.None : ErrorException.DatabaseError;
         }
 
-        public ErrorException DeleteMessage(MessageDTO res)
+        public async Task<ErrorException> DeleteMessage(MessageDTO res)
         {
             var currentUser = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var message = context.Messages.FirstOrDefault(x => x.Id == res.Id);
@@ -70,6 +81,8 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
 					{
 						attachmentService.RemoveAttachment(message.Content, message.MessageType);
 					}
+                    
+                    await SendMessageToClient(message);
 
 					return ErrorException.None;
                 }
@@ -122,5 +135,16 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
 			}
 			return ErrorException.NotExist;
 		}
-    }
+
+        private async Task SendMessageToClient(Message msg)
+        {
+			var currentUserId = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+			List<ClientDTO> clients = await clientService.GetClientsInConversation(msg.ConversationId, msg.BelongToGroup);
+
+			IReadOnlyList<string> connectionIds = clients.Select(x => x.SignalRClientId).ToList();
+
+			await hubContext.Clients.Clients(connectionIds).SendAsync("OnMessageSent", msg);
+		}
+	}
 }

@@ -36,11 +36,11 @@ namespace TestAuthenAndTextMessage.Controllers
 		}
 
 		[HttpPost]
-		public IActionResult CreateMessage(MessageDTO res)
+		public async Task<IActionResult> CreateMessage(MessageDTO res)
 		{
 			try
 			{
-				service.AddMessage(res);
+				await service.AddMessage(res);
 				return Ok();
 			}
 			catch (Exception ex)
@@ -64,11 +64,11 @@ namespace TestAuthenAndTextMessage.Controllers
 		}
 
 		[HttpPost]
-		public IActionResult DeleteMessage(MessageDTO res)
+		public async Task<IActionResult> DeleteMessage(MessageDTO res)
 		{
 			try
 			{
-				service.DeleteMessage(res);
+				await service.DeleteMessage(res);
 				return Ok();
 			}
 			catch (Exception ex)

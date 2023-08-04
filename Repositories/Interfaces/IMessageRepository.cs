@@ -7,9 +7,9 @@ namespace TestAuthenAndTextMessage.Repositories.Interfaces
     {
         Pagination<MessageDTO> GetMessages(int conversationId, bool belongToGroup, int pageIndex, int pageSize);
 
-        ErrorException AddMessage(MessageDTO res);
+        Task<ErrorException> AddMessage(MessageDTO res);
 
-        ErrorException DeleteMessage(MessageDTO res);
+        Task<ErrorException> DeleteMessage(MessageDTO res);
 
         ErrorException UpdateMessage(MessageDTO res);
     }

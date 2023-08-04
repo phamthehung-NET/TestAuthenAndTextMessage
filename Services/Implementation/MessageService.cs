@@ -14,18 +14,18 @@ namespace TestAuthenAndTextMessage.Services.Implementation
 			repository = _repository;
         }
 
-        public void AddMessage(MessageDTO res)
+        public async Task AddMessage(MessageDTO res)
 		{
-			var result = repository.AddMessage(res);
+			var result = await repository.AddMessage(res);
 			if (result == ErrorException.DatabaseError)
 			{
 				throw new Exception("Cannot add due to the error connection to Database");
 			}
 		}
 
-		public void DeleteMessage(MessageDTO res)
+		public async Task DeleteMessage(MessageDTO res)
 		{
-			var result = repository.DeleteMessage(res);
+			var result = await repository.DeleteMessage(res);
 			if (result == ErrorException.NotExist)
 			{
 				throw new Exception("This Message is not exist");

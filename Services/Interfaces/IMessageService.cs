@@ -7,9 +7,9 @@ namespace TestAuthenAndTextMessage.Services.Interfaces
     {
 		Pagination<MessageDTO> GetMessages(int conversationId, bool belongToGroup, int pageIndex, int pageSize);
 
-		void AddMessage(MessageDTO res);
+		Task AddMessage(MessageDTO res);
 
-		void DeleteMessage(MessageDTO res);
+		Task DeleteMessage(MessageDTO res);
 
 		void UpdateMessage(MessageDTO res);
 	}

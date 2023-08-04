@@ -86,10 +86,5 @@ namespace TestAuthenAndTextMessage.Hubs
 				Console.WriteLine(ex.Message);
 			}
 		}
-
-        public async Task Test(string data)
-        {
-            await Clients.All.SendAsync("Test", data);
-        }
 	}
 }
