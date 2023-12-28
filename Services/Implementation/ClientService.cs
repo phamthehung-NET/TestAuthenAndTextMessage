@@ -2,7 +2,7 @@
 using TestAuthenAndTextMessage.Models.DTO;
 using TestAuthenAndTextMessage.Repositories.Interfaces;
 using TestAuthenAndTextMessage.Services.Interfaces;
-using TestAuthenAndTextMessage.Ultilities;
+using TestAuthenAndTextMessage.Utilities;
 
 namespace TestAuthenAndTextMessage.Services.Implementation
 {

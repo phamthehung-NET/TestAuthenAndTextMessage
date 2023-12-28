@@ -1,5 +1,5 @@
 ﻿using TestAuthenAndTextMessage.Models;
-using TestAuthenAndTextMessage.Ultilities;
+using TestAuthenAndTextMessage.Utilities;
 
 namespace TestAuthenAndTextMessage.Repositories.Interfaces
 {

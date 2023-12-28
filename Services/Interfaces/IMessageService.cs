@@ -1,16 +1,16 @@
 ﻿using TestAuthenAndTextMessage.Models.DTO;
-using TestAuthenAndTextMessage.Ultilities;
+using TestAuthenAndTextMessage.Utilities;
 
 namespace TestAuthenAndTextMessage.Services.Interfaces
 {
     public interface IMessageService
     {
-		Pagination<MessageDTO> GetMessages(int conversationId, bool belongToGroup, int pageIndex, int pageSize);
+		Task<ResponseModel> GetMessages(int conversationId, bool belongToGroup, int pageIndex, int pageSize);
 
-		Task AddMessage(MessageDTO res);
+		Task<ResponseModel> AddMessage(MessageDTO res);
 
-		Task DeleteMessage(MessageDTO res);
+		Task<ResponseModel> DeleteMessage(MessageDTO res);
 
-		void UpdateMessage(MessageDTO res);
+		ResponseModel UpdateMessage(MessageDTO res);
 	}
 }

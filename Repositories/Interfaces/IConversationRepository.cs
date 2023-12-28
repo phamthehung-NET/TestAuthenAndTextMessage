@@ -1,12 +1,12 @@
 ﻿using TestAuthenAndTextMessage.Models;
 using TestAuthenAndTextMessage.Models.DTO;
-using TestAuthenAndTextMessage.Ultilities;
+using TestAuthenAndTextMessage.Utilities;
 
 namespace TestAuthenAndTextMessage.Repositories.Interfaces
 {
     public interface IConversationRepository
     {
-        Pagination<object> GetAllConversation(int pageIndex, int pageSize);
+        Task<ResponseModel> GetAllConversation(int pageIndex, int pageSize);
 
         ErrorException CreateConversation(string userId, string message);
 
@@ -18,6 +18,6 @@ namespace TestAuthenAndTextMessage.Repositories.Interfaces
 
         ErrorException UpdateGroupChat(GroupDTO group);
 
-        IQueryable<CustomUser> SearchUser(string keyword);
+        Task<ResponseModel> SearchUser(string keyword);
 	}
 }

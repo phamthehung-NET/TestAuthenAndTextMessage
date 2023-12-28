@@ -2,7 +2,7 @@
 using TestAuthenAndTextMessage.Models.DTO;
 using TestAuthenAndTextMessage.Repositories.Interfaces;
 using TestAuthenAndTextMessage.Services.Interfaces;
-using TestAuthenAndTextMessage.Ultilities;
+using TestAuthenAndTextMessage.Utilities;
 
 namespace TestAuthenAndTextMessage.Services.Implementation
 {
@@ -15,7 +15,7 @@ namespace TestAuthenAndTextMessage.Services.Implementation
             repository = _repository;
         }
 
-        public async Task<object> Login(LoginModel model)
+        public async Task<ResponseModel> Login(LoginModel model)
         {
             var result = await repository.Login(model);
             if (result != null)
@@ -28,13 +28,13 @@ namespace TestAuthenAndTextMessage.Services.Implementation
         public async Task Resgiter(RegisterModel model)
         {
             var result = await repository.Resgiter(model);
-            if(result == ErrorException.DoublicateUserName)
+            if(result == ErrorException.DuplicateUserName)
             {
                 throw new Exception("Username is doublicated");
             }
         }
 
-        public async Task<UserDTO> GetUserInfo()
+        public async Task<ResponseModel> GetUserInfo()
         { 
             return await repository.GetUserInfo();
         }

@@ -1,4 +1,4 @@
-﻿namespace TestAuthenAndTextMessage.Ultilities
+﻿namespace TestAuthenAndTextMessage.Utilities
 {
     public class Constants
     {
@@ -8,15 +8,16 @@
         public const string UserRole = "User";
         public const string AdminRole = "Admin";
 
-        public const string AESInitalVector = "OFRna73m*aze01xY";
-		public const string SystemSecretKey = "System_Secretkey";
-
-	}
+        public const string AESInitialVector = "AES256Configuration:AESInitialVector";
+		public const string SystemSecretKey = "AES256Configuration:SystemSecretKey";
+        
+        public const string AccessToken = "access_token";
+    }
 
     public enum ErrorException
     {
         None,
-        DoublicateUserName,
+        DuplicateUserName,
         NotExist,
         NotPermitted,
         DatabaseError,

@@ -1,9 +1,9 @@
 ﻿using System.Linq.Expressions;
-using TestAuthenAndTextMessage.Ultilities;
+using TestAuthenAndTextMessage.Utilities;
 
 namespace Accounting.Utilities
 {
-    public static class QueryableExtentions
+    public static class QueryableExtensions
     {
         /// <summary>
         /// Ordering by dynamic field.

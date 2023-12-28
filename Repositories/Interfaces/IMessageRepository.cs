@@ -1,11 +1,11 @@
 ﻿using TestAuthenAndTextMessage.Models.DTO;
-using TestAuthenAndTextMessage.Ultilities;
+using TestAuthenAndTextMessage.Utilities;
 
 namespace TestAuthenAndTextMessage.Repositories.Interfaces
 {
     public interface IMessageRepository
     {
-        Pagination<MessageDTO> GetMessages(int conversationId, bool belongToGroup, int pageIndex, int pageSize);
+        Task<ResponseModel> GetMessages(int conversationId, bool belongToGroup, int pageIndex, int pageSize);
 
         Task<ErrorException> AddMessage(MessageDTO res);
 

@@ -1,4 +1,5 @@
 ﻿using Accounting.Utilities;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
 using TestAuthenAndTextMessage.Data;
@@ -7,7 +8,7 @@ using TestAuthenAndTextMessage.Models;
 using TestAuthenAndTextMessage.Models.DTO;
 using TestAuthenAndTextMessage.Repositories.Interfaces;
 using TestAuthenAndTextMessage.Services.Interfaces;
-using TestAuthenAndTextMessage.Ultilities;
+using TestAuthenAndTextMessage.Utilities;
 
 namespace TestAuthenAndTextMessage.Repositories.Implementation
 {
@@ -91,30 +92,39 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
             return ErrorException.NotExist;
         }
 
-        public Pagination<MessageDTO> GetMessages(int conversationId, bool belongToGroup, int pageIndex, int pageSize)
+        public async Task<ResponseModel> GetMessages(int conversationId, bool belongToGroup, int pageIndex, int pageSize)
         {
-            return (from m in context.Messages
-                          join u in context.Users on m.AuthorId equals u.Id
-                          where m.ConversationId == conversationId && m.BelongToGroup == belongToGroup
-                          select new MessageDTO
-                          {
-                              Id = m.Id,
-                              Content = m.Content,
-                              BelongToGroup = m.BelongToGroup,
-                              ConversationId = m.ConversationId,
-                              CreatedDate = m.CreatedDate,
-                              ModifiedDate = m.ModifiedDate,
-                              IsDeleteForEveryOne = m.IsDeleteForEveryOne,
-                              IsSelfDelete = m.IsSelfDelete,
-                              MessageType = m.MessageType,
-                              Author = new()
-                              {
-                                  Id = m.AuthorId,
-                                  FirstName = u.FirstName,
-                                  LastName = u.LastName,
-                                  Avatar = u.Avatar,
-                              },
-                          }).OrderByDescending(x => x.CreatedDate).Paginate(pageIndex, pageSize);
+            var currentUserId = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            
+            var token = await httpContextAccessor.HttpContext.GetTokenAsync(Constants.AccessToken);
+
+            ResponseModel res = new()
+            {
+                Message = "Success",
+                Data = HelperFunctions.EncryptAES(token, (from m in context.Messages
+                                                   join u in context.Users on m.AuthorId equals u.Id
+                                                   where m.ConversationId == conversationId && m.BelongToGroup == belongToGroup
+                                                   select new MessageDTO
+                                                   {
+                                                       Id = m.Id,
+                                                       Content = m.Content,
+                                                       BelongToGroup = m.BelongToGroup,
+                                                       ConversationId = m.ConversationId,
+                                                       CreatedDate = m.CreatedDate,
+                                                       ModifiedDate = m.ModifiedDate,
+                                                       IsDeleteForEveryOne = m.IsDeleteForEveryOne,
+                                                       IsSelfDelete = m.IsSelfDelete,
+                                                       MessageType = m.MessageType,
+                                                       Author = new()
+                                                       {
+                                                           Id = m.AuthorId,
+                                                           FirstName = u.FirstName,
+                                                           LastName = u.LastName,
+                                                           Avatar = u.Avatar,
+                                                       },
+                                                   }).OrderByDescending(x => x.CreatedDate).Paginate(pageIndex, pageSize))
+            };
+            return res;
         }
 
         public ErrorException UpdateMessage(MessageDTO res)

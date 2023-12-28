@@ -1,6 +1,6 @@
 ﻿using TestAuthenAndTextMessage.Models;
 using TestAuthenAndTextMessage.Models.DTO;
-using TestAuthenAndTextMessage.Ultilities;
+using TestAuthenAndTextMessage.Utilities;
 
 namespace TestAuthenAndTextMessage.Repositories.Interfaces
 {

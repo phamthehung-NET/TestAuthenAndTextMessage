@@ -1,23 +1,23 @@
 ﻿using TestAuthenAndTextMessage.Models;
 using TestAuthenAndTextMessage.Models.DTO;
-using TestAuthenAndTextMessage.Ultilities;
+using TestAuthenAndTextMessage.Utilities;
 
 namespace TestAuthenAndTextMessage.Services.Interfaces
 {
     public interface IConversationService
     {
-        Pagination<object> GetAllConversation(int pageIndex, int pageSize);
+        Task<ResponseModel> GetAllConversation(int pageIndex, int pageSize);
 
-        void CreateConversation(string userId, string message);
+        ResponseModel CreateConversation(string userId, string message);
 
-        void DeleteConversation(int id);
+        ResponseModel DeleteConversation(int id);
 
-        void CreateGroupChat(GroupDTO res);
+        ResponseModel CreateGroupChat(GroupDTO req);
 
-        void DeleteGroupChat(int id);
+        ResponseModel DeleteGroupChat(int id);
 
-        void UpdateGroupChat(GroupDTO group);
+        ResponseModel UpdateGroupChat(GroupDTO group);
 
-		IQueryable<CustomUser> SearchUser(string keyword);
+		Task<ResponseModel> SearchUser(string keyword);
 	}
 }

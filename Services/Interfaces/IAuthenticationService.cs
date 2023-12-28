@@ -1,15 +1,15 @@
 ﻿using TestAuthenAndTextMessage.Models;
 using TestAuthenAndTextMessage.Models.DTO;
-using TestAuthenAndTextMessage.Ultilities;
+using TestAuthenAndTextMessage.Utilities;
 
 namespace TestAuthenAndTextMessage.Services.Interfaces
 {
     public interface IAuthenticationService
     {
-        Task<object> Login(LoginModel model);
+        Task<ResponseModel> Login(LoginModel model);
 
         Task Resgiter(RegisterModel model);
 
-        Task<UserDTO> GetUserInfo();
+        Task<ResponseModel> GetUserInfo();
     }
 }

@@ -1,13 +1,15 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using TestAuthenAndTextMessage.Models;
 using TestAuthenAndTextMessage.Models.DTO;
 using TestAuthenAndTextMessage.Repositories.Interfaces;
-using TestAuthenAndTextMessage.Ultilities;
+using TestAuthenAndTextMessage.Utilities;
 
 namespace TestAuthenAndTextMessage.Repositories.Implementation
 {
@@ -24,15 +26,16 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
             httpContextAccessor = _httpContextAccessor;
         }
 
-        public async Task<object> Login(LoginModel model)
+        public async Task<ResponseModel> Login(LoginModel model)
         {
+            var res = new ResponseModel();
             var user = await userManager.FindByNameAsync(model.UserName);
             if (user != null && await userManager.CheckPasswordAsync(user, model.Password))
             {
                 var userRoles = await userManager.GetRolesAsync(user);
                 var authClaims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Name, user.UserName),
+                    //new Claim(ClaimTypes.Name, user.UserName),
                     new Claim(ClaimTypes.NameIdentifier, user.Id),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 };
@@ -52,13 +55,15 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
                     signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
                 );
 
-                return new
-                {
-                    token = new JwtSecurityTokenHandler().WriteToken(token),
-                    expration = token.ValidTo
-                };
+                res.Message = "Login success";
+                res.Data = new JwtSecurityTokenHandler().WriteToken(token);
+
+                return res;
             }
-            return null;
+
+            res.Error = true;
+            res.Message = "Login failed";
+            return res;
         }
 
         public async Task<ErrorException> Resgiter(RegisterModel model)
@@ -77,12 +82,16 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
                 await userManager.AddToRoleAsync(user, Constants.UserRole);
                 return ErrorException.None;
             }
-            return ErrorException.DoublicateUserName;
+            return ErrorException.DuplicateUserName;
         }
 
-        public async Task<UserDTO> GetUserInfo()
+        public async Task<ResponseModel> GetUserInfo()
         {
+            ResponseModel res = new();
+
             var userId = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            var token = await httpContextAccessor.HttpContext.GetTokenAsync(Constants.AccessToken);
 
             var user = await userManager.FindByIdAsync(userId);
 
@@ -94,23 +103,15 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
                 Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                AccessFailedCount = user.AccessFailedCount,
-                ConcurrencyStamp = user.ConcurrencyStamp,
-                EmailConfirmed = user.EmailConfirmed,
-                LockoutEnabled = user.LockoutEnabled,
-                LockoutEnd = user.LockoutEnd,
-                NormalizedEmail = user.NormalizedEmail,
-                NormalizedUserName = user.NormalizedUserName,
-                PasswordHash = user.PasswordHash,
                 PhoneNumber = user.PhoneNumber,
-                PhoneNumberConfirmed = user.PhoneNumberConfirmed,
-                SecurityStamp = user.SecurityStamp,
-                TwoFactorEnabled = user.TwoFactorEnabled,
                 UserName = user.UserName,
                 Role = roles.FirstOrDefault(),
             };
 
-            return currentUser;
+            res.Message = "Get current user successfully";
+            res.Data = HelperFunctions.EncryptAES(token, currentUser);
+
+            return res;
         }
     }
 }

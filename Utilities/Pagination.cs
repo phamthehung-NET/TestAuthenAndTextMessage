@@ -1,4 +1,4 @@
-﻿namespace TestAuthenAndTextMessage.Ultilities
+﻿namespace TestAuthenAndTextMessage.Utilities
 {
     public class Pagination<T>
     {

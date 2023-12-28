@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TestAuthenAndTextMessage.Extensions;
 using TestAuthenAndTextMessage.Models.DTO;
 using TestAuthenAndTextMessage.Services.Interfaces;
 
@@ -8,6 +9,7 @@ namespace TestAuthenAndTextMessage.Controllers
     [Route("[controller]/[action]")]
     [ApiController]
     [Authorize]
+    [ValidationFilter]
     public class ConversationController : ControllerBase
     {
         private readonly IConversationService service;
@@ -18,101 +20,126 @@ namespace TestAuthenAndTextMessage.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAllConversation(int? pageIndex, int? pageSize)
+        public async Task<IActionResult> GetAllConversation(int? pageIndex, int? pageSize)
         {
+            ResponseModel res = new();
+
             pageIndex ??= 1;
             pageSize ??= 10;
 
             try
             {
-                return Ok(service.GetAllConversation(pageIndex.Value, pageSize.Value));
+                res = await service.GetAllConversation(pageIndex.Value, pageSize.Value);
+                return Ok(res);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                res.Error = true;
+                res.Message = ex.Message;
+                return BadRequest(res);
             }
         }
 
         [HttpPost]
         public IActionResult ContactToUser(string userId, string message)
         {
+            ResponseModel res = new();
             try
             {
-                service.CreateConversation(userId, message);
-                return Ok();
+                res = service.CreateConversation(userId, message);
+                return Ok(res);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                res.Error = true;
+                res.Message = ex.Message;
+                return BadRequest(res);
             }
         }
 
         [HttpDelete("{id}")]
         public IActionResult DeleteConversation(int id)
         {
+            ResponseModel res = new();
             try
             {
-                service.DeleteConversation(id);
-                return Ok();
+                res = service.DeleteConversation(id);
+                return Ok(res);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                res.Error = true;
+                res.Message = ex.Message;
+                return BadRequest(res);
             }
         }
 
         [HttpPost]
-        public IActionResult CreateGroupChat(GroupDTO res)
+        public IActionResult CreateGroupChat(GroupDTO req)
         {
+            ResponseModel res = new();
 			try
 			{
-				service.CreateGroupChat(res);
-				return Ok();
+				res = service.CreateGroupChat(req);
+                return Ok(res);
 			}
 			catch (Exception ex)
 			{
-				return BadRequest(ex.Message);
+                res.Error = true;
+                res.Message = ex.Message;
+				return BadRequest(res);
 			}
 		}
 
         [HttpDelete("{id}")]
         public IActionResult DeleteGroupChat(int id)
         {
+            ResponseModel res = new();
 			try
 			{
-				service.DeleteGroupChat(id);
-				return Ok();
+				res = service.DeleteGroupChat(id);
+				return Ok(res);
 			}
 			catch (Exception ex)
 			{
-				return BadRequest(ex.Message);
-			}
+                res.Error = true;
+                res.Message = ex.Message;
+                return BadRequest(res);
+            }
 		}
 
         [HttpPost]
-        public IActionResult UpdateGroupChat(GroupDTO res)
+        public IActionResult UpdateGroupChat(GroupDTO req)
         {
+            ResponseModel res = new();
 			try
 			{
-				service.UpdateGroupChat(res);
-				return Ok();
+				res = service.UpdateGroupChat(req);
+				return Ok(res);
 			}
 			catch (Exception ex)
 			{
-				return BadRequest(ex.Message);
-			}
+                res.Error = true;
+                res.Message = ex.Message;
+                return BadRequest(res);
+            }
 		}
 
 		[HttpGet]
-		public IActionResult SearchUser(string keyword)
+		public async Task<IActionResult> SearchUser(string keyword)
 		{
+            ResponseModel res = new();
 			try
 			{
-				return Ok(service.SearchUser(keyword).ToList());
+                res = await service.SearchUser(keyword);
+
+                return Ok(res);
 			}
 			catch (Exception ex)
 			{
-				return BadRequest(ex.Message);
+                res.Error = true;
+                res.Message = ex.Message;
+				return BadRequest(res);
 			}
 		}
 	}

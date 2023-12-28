@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using TestAuthenAndTextMessage.Models;
+using TestAuthenAndTextMessage.Extensions;
 using TestAuthenAndTextMessage.Models.DTO;
 using TestAuthenAndTextMessage.Services.Interfaces;
 
@@ -10,6 +9,7 @@ namespace TestAuthenAndTextMessage.Controllers
 	[Route("[controller]/[action]")]
 	[ApiController]
 	[Authorize]
+	[ValidationFilter]
 	public class MessageController : ControllerBase
 	{
 		private readonly IMessageService service;
@@ -20,61 +20,75 @@ namespace TestAuthenAndTextMessage.Controllers
         }
 
 		[HttpGet]
-		public IActionResult GetAllMessages(int conversationId, bool belongToGroup, int? pageIndex, int? pageSize)
+		public async Task<IActionResult> GetAllMessages(int conversationId, bool belongToGroup, int? pageIndex, int? pageSize)
 		{
+			ResponseModel res = new();
 			pageIndex ??= 1;
 			pageSize ??= 10;
 
 			try
 			{
-				return Ok(service.GetMessages(conversationId, belongToGroup, pageIndex.Value, pageSize.Value));
+				res = await service.GetMessages(conversationId, belongToGroup, pageIndex.Value, pageSize.Value);
+
+                return Ok(res);
 			}
 			catch (Exception ex)
 			{
-				return BadRequest(ex.Message);
+				res.Error = true;
+				res.Message = ex.Message;
+				return BadRequest(res);
 			}
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> CreateMessage(MessageDTO res)
+		public async Task<IActionResult> CreateMessage(MessageDTO req)
 		{
+			ResponseModel res = new();
 			try
 			{
-				await service.AddMessage(res);
-				return Ok();
+				 res = await service.AddMessage(req);
+				return Ok(res);
 			}
 			catch (Exception ex)
 			{
-				return BadRequest(ex.Message);
-			}
+                res.Error = true;
+                res.Message = ex.Message;
+                return BadRequest(res);
+            }
 		}
 
 		[HttpPost]
-		public IActionResult UpdateMessage(MessageDTO res)
+		public IActionResult UpdateMessage(MessageDTO req)
 		{
-			try
-			{
-				service.UpdateMessage(res);
-				return Ok();
+			ResponseModel res = new();
+            try
+            {
+                res = service.UpdateMessage(req);
+				return Ok(res);
 			}
 			catch (Exception ex)
 			{
-				return BadRequest(ex.Message);
-			}
+                res.Error = true;
+                res.Message = ex.Message;
+                return BadRequest(res);
+            }
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> DeleteMessage(MessageDTO res)
+		public async Task<IActionResult> DeleteMessage(MessageDTO req)
 		{
-			try
-			{
-				await service.DeleteMessage(res);
-				return Ok();
+			ResponseModel res = new();
+            try
+            {
+                res = await service.DeleteMessage(req);
+				return Ok(res);
 			}
 			catch (Exception ex)
 			{
-				return BadRequest(ex.Message);
-			}
+                res.Error = true;
+                res.Message = ex.Message;
+                return BadRequest(res);
+            }
 		}
     }
 }

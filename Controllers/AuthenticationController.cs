@@ -1,42 +1,41 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+using TestAuthenAndTextMessage.Extensions;
 using TestAuthenAndTextMessage.Models;
+using TestAuthenAndTextMessage.Models.DTO;
 using TestAuthenAndTextMessage.Services.Interfaces;
-using TestAuthenAndTextMessage.Ultilities;
+using TestAuthenAndTextMessage.Utilities;
 
 namespace TestAuthenAndTextMessage.Controllers
 {
     [Route("[controller]/[action]")]
     [ApiController]
+    [ValidationFilter]
     public class AuthenticationController : ControllerBase
     {
         private readonly IAuthenticationService service;
+        private readonly IConfiguration config;
 
-        public AuthenticationController(IAuthenticationService _service)
+        public AuthenticationController(IAuthenticationService _service, IConfiguration _config)
         {
             service = _service;
+            config = _config;
         }
 
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
+            ResponseModel res = new();
             try
             {
-                if(ModelState.IsValid)
-                {
-                    return Ok(await service.Login(model));
-                }
-                return BadRequest();
+                res = await service.Login(model);
+                return Ok(res);
             }
             catch (Exception ex)
             {
-                return Unauthorized(ex.Message);
+                res.Error = true;
+                res.Message = ex.Message;
+                return Unauthorized(res);
             }
         }
 
@@ -45,12 +44,8 @@ namespace TestAuthenAndTextMessage.Controllers
         {
             try
             {
-                if (ModelState.IsValid)
-                {
-                    await service.Resgiter(model);
-                    return Ok();
-                }
-                return BadRequest();
+                await service.Resgiter(model);
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -62,20 +57,8 @@ namespace TestAuthenAndTextMessage.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUserInfo()
         {
-            return Ok(await service.GetUserInfo());
+            var res = await service.GetUserInfo();
+            return Ok(res);
         }
-
-        [HttpPost]
-        public IActionResult EncryptAES([FromForm]string data)
-        {
-            return Ok(HelperFunctions.Encrypt(data));
-        }
-
-		[Authorize]
-		[HttpGet]
-		public IActionResult GetSecretkey()
-		{
-			return Ok(Constants.SystemSecretKey);
-		}
 	}
 }

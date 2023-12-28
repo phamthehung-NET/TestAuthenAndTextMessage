@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TestAuthenAndTextMessage.Extensions;
 using TestAuthenAndTextMessage.Services.Interfaces;
 
 namespace TestAuthenAndTextMessage.Controllers
@@ -8,6 +8,7 @@ namespace TestAuthenAndTextMessage.Controllers
 	[Route("[controller]/[action]")]
 	[ApiController]
 	[Authorize]
+	[ValidationFilter]
 	public class AttachmentController : ControllerBase
 	{
 		private readonly IAttachmentService service;

@@ -3,7 +3,7 @@ using System.Security.Claims;
 using TestAuthenAndTextMessage.Data;
 using TestAuthenAndTextMessage.Models;
 using TestAuthenAndTextMessage.Repositories.Interfaces;
-using TestAuthenAndTextMessage.Ultilities;
+using TestAuthenAndTextMessage.Utilities;
 
 namespace TestAuthenAndTextMessage.Repositories.Implementation
 {

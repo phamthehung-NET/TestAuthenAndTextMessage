@@ -1,7 +1,7 @@
 ﻿using TestAuthenAndTextMessage.Models.DTO;
 using TestAuthenAndTextMessage.Repositories.Interfaces;
 using TestAuthenAndTextMessage.Services.Interfaces;
-using TestAuthenAndTextMessage.Ultilities;
+using TestAuthenAndTextMessage.Utilities;
 
 namespace TestAuthenAndTextMessage.Services.Implementation
 {
@@ -14,18 +14,25 @@ namespace TestAuthenAndTextMessage.Services.Implementation
 			repository = _repository;
         }
 
-        public async Task AddMessage(MessageDTO res)
+        public async Task<ResponseModel> AddMessage(MessageDTO req)
 		{
-			var result = await repository.AddMessage(res);
+			ResponseModel res = new();
+			var result = await repository.AddMessage(req);
+			
 			if (result == ErrorException.DatabaseError)
 			{
 				throw new Exception("Cannot add due to the error connection to Database");
 			}
+
+			res.Message = "Success";
+            return res;
 		}
 
-		public async Task DeleteMessage(MessageDTO res)
+		public async Task<ResponseModel> DeleteMessage(MessageDTO req)
 		{
-			var result = await repository.DeleteMessage(res);
+			ResponseModel res = new();
+			var result = await repository.DeleteMessage(req);
+			
 			if (result == ErrorException.NotExist)
 			{
 				throw new Exception("This Message is not exist");
@@ -34,16 +41,21 @@ namespace TestAuthenAndTextMessage.Services.Implementation
 			{
 				throw new Exception("You don't have permission to remove this message");
 			}
+
+			res.Message = "Success";
+			return res;
 		}
 
-		public Pagination<MessageDTO> GetMessages(int conversationId, bool belongToGroup, int pageIndex, int pageSize)
+		public async Task<ResponseModel> GetMessages(int conversationId, bool belongToGroup, int pageIndex, int pageSize)
 		{
-			return repository.GetMessages(conversationId, belongToGroup, pageIndex, pageSize);
+			return await repository.GetMessages(conversationId, belongToGroup, pageIndex, pageSize);
 		}
 
-		public void UpdateMessage(MessageDTO res)
+		public ResponseModel UpdateMessage(MessageDTO req)
 		{
-			var result = repository.UpdateMessage(res);
+			ResponseModel res = new();
+			var result = repository.UpdateMessage(req);
+
 			if (result == ErrorException.NotExist)
 			{
 				throw new Exception("This Message is not exist");
@@ -52,6 +64,9 @@ namespace TestAuthenAndTextMessage.Services.Implementation
 			{
 				throw new Exception("You don't have permission to edit this message");
 			}
+
+			res.Message = "Success";
+            return res;
 		}
 	}
 }

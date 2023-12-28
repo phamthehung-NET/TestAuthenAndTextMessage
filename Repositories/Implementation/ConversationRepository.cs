@@ -1,11 +1,12 @@
 ﻿using Accounting.Utilities;
+using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using TestAuthenAndTextMessage.Data;
 using TestAuthenAndTextMessage.Models;
 using TestAuthenAndTextMessage.Models.DTO;
 using TestAuthenAndTextMessage.Repositories.Interfaces;
 using TestAuthenAndTextMessage.Services.Interfaces;
-using TestAuthenAndTextMessage.Ultilities;
+using TestAuthenAndTextMessage.Utilities;
 
 namespace TestAuthenAndTextMessage.Repositories.Implementation
 {
@@ -92,9 +93,12 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
             return ErrorException.NotExist;
         }
 
-        public Pagination<object> GetAllConversation(int pageIndex, int pageSize)
+        public async Task<ResponseModel> GetAllConversation(int pageIndex, int pageSize)
         {
+            ResponseModel res = new();
             var userId = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            
+            var token = await httpContextAccessor.HttpContext.GetTokenAsync(Constants.AccessToken);
 
             List<dynamic> conversationsAndGroups = new();
 
@@ -172,7 +176,10 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
             conversationsAndGroups.AddRange(conversation);
             conversationsAndGroups.AddRange(groups);
 
-            return conversationsAndGroups.Where(x => x.LastestMessage != null).OrderByDescending(x => x.LastestMessage.CreatedDate).AsQueryable().Paginate(pageIndex, pageSize);
+            res.Message = "Success";
+            res.Data = HelperFunctions.EncryptAES(token, conversationsAndGroups.Where(x => x.LastestMessage != null).OrderByDescending(x => x.LastestMessage.CreatedDate).AsQueryable().Paginate(pageIndex, pageSize));
+
+            return res;
         }
 
         public ErrorException CreateGroupChat(GroupDTO res)
@@ -305,15 +312,23 @@ namespace TestAuthenAndTextMessage.Repositories.Implementation
             return ErrorException.NotExist;
         }
 
-        public IQueryable<CustomUser> SearchUser(string keyword)
+        public async Task<ResponseModel> SearchUser(string keyword)
         {
+            ResponseModel res = new();
+
             var currentUserId = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            return !string.IsNullOrEmpty(keyword) ? context.Users
+
+            var token = await httpContextAccessor.HttpContext.GetTokenAsync(Constants.AccessToken);
+
+            res.Message = "Success";
+            res.Data = HelperFunctions.EncryptAES(token, !string.IsNullOrEmpty(keyword) ? context.Users
                 .Where(x => (x.FirstName.ToLower().Contains(keyword.ToLower())
                 || x.LastName.ToLower().Contains(keyword.ToLower())
                 || x.UserName.ToLower().Contains(keyword.ToLower())
                 || x.PhoneNumber.ToLower().Contains(keyword.ToLower())
-                || x.Email.ToLower().Contains(keyword.ToLower())) && !x.Id.Equals(currentUserId) && !x.Id.Equals("1")) : null;
+                || x.Email.ToLower().Contains(keyword.ToLower())) && !x.Id.Equals(currentUserId) && !x.Id.Equals("1")).ToList() : null);
+
+            return res;
 		}
     }
 }
